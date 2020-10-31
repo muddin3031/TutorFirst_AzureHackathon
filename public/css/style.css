@@ -1,0 +1,88 @@
+.navbar{
+    background-color: #b8d1ff !important;
+  }
+  
+  .navbar .navbar-brand{
+    color:black;
+    font-weight: bolder;
+    font-size: 1.3em;
+  }
+
+  .mission-header {
+    text-align: center;
+  }
+
+#mission-statement {
+  padding-left: 150px;
+  padding-right: 150px;
+}
+
+.passId {
+  margin: 0 auto 0 auto;
+}
+
+.register-btn {
+  display: block;
+  margin: 10px auto 0 auto;
+}
+
+.card1{
+    padding-top: 10px;
+    height: 318px;
+    min-height: 318px;
+    width: 45%;
+    min-width: 200px;
+    text-align: center;
+    margin: 0 auto 0 auto;
+    margin-top: 100px;
+    background-color: white;
+    border: solid black;
+    border-width: 0;
+    border-radius: 3px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.current-btn{
+    background-color: bisque;
+    
+}
+
+.container{
+    margin-top: 50px;
+    margin-bottom: 50px;
+    width:100%;
+    text-align: center !important;
+
+}
+
+.mission-container{ 
+  margin-top: 85px;
+  background: #b8d1ff;
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+.review-container {
+  margin-top: 75px;
+  text-align: center;
+}
+
+label{
+    display: block;
+}
+
+.footer-container{
+    padding-top:50px;
+    padding-bottom:50px;
+    background: #d7dbd8;
+}
+
+.students-title{
+    text-align: center;
+    
+}
+
+.student{
+    padding-top: 50px;
+    padding-bottom: 50px;
+}

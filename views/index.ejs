@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TutorFirst</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="mynav">
+
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">TutorFirst</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav ml-auto">
+          <a class="nav-item nav-link" href="#"></a>
+          <a class="nav-item nav-link" href="#">Login</a>
+    
+        </div>
+      </div>
+    </nav>
+    </div>
+    <div class="container">
+      <div class="card1">
+        <button id="student" onclick="student();" class="btn current-btn">Student</button>
+        <button id="tutor" onclick="tutor();" class="btn btn-light">Tutor</button>
+
+        <div class="student-div">
+            <h1>Student</h1>
+            <h2>Login</h2>
+            <label for="" >Email</label>
+            <input name="studentEmail" type="text">
+
+            <label for="">Password</label>
+            <input name="studentPass" type="text" name="" class="passId">
+            <button onclick="registerS();" class="register-btn">Register</button>
+            
+            <hr>
+            <div style="display: none;" class="register">
+                <h2>Register</h2>
+                <label for="">First Name</label>
+                <input name="studentFirst" type="text" name="" id="">
+
+                <label for="">Last Name</label>
+                <input name="studentLast" type="text" name="" id="">
+
+                <label for="">Email Address</label>
+                <input name="studentEmail" type="text" name="" id="">
+
+                <label for="">Password</label>
+                <input name="studentPass" type="text" name="" id="">
+            </div>
+        </div>
+
+        
+
+        <div class="tutor-div" style="display: none;">
+            <h1>Tutor</h1>
+            <h2>Login</h2>
+            <label for="" >Email</label>
+            <input name="tutorName" type="text">
+
+            <label for="" >Password</label>
+            <input name="tutorPass" type="text" name="" class="passId">
+            <button onclick="registerT();" class="register-btn">Register</button>
+            <hr>
+            <div style="display: none;" class="register">
+                <h2>Register</h2>
+                <label for="">First Name</label>
+                <input name="tutorFirst" type="text" name="" id="">
+
+                <label for="">Last Name</label>
+                <input name="tutorLast" type="text" name="" id="">
+
+                <label for="">Email Address</label>
+                <input name="tutorEmail" type="text" name="" id="">
+
+                <label for="">Password</label>
+                <input name="tutorPass" type="text" name="" id="">
+            </div>
+        </div>
+
+      </div>      
+    </div>
+
+    <div class="container-fluid mission-container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="mission-header"> Mission Statement</h1>
+                <p id="mission-statement">Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
+                    when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
+                    It has survived not only five centuries, but also the leap into electronic typesetting, remaining 
+                    essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, 
+                    and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid review-container">
+        <div class="row students-title" >
+            <div class="col-lg-12">
+                <h1>Students</h1>
+            </div>
+
+        </div>
+        <div class="row student">
+            <div class="col-lg-4">
+                <h2> Review1</h2>
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
+                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+
+            </div>
+            <div class="col-lg-4">
+                <h2> Review2</h2>
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
+                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+
+
+              </div>
+              <div class="col-lg-4">
+                <h2> Review3</h2>
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
+                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+
+
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container-fluid footer-container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <ul>
+                        <li>Home</li>
+                        <li>Login</li>
+                        <li>Contact us</li>
+                    </ul>
+                    
+                </div>
+                <div class="col-lg-8">
+                    
+                </div>
+            </div>
+        </div>
+    </footer>
+   <script>
+       function student(){
+        document.getElementById("tutor").classList.remove("current-btn")
+        document.getElementById("student").classList.remove("btn-light")
+        document.getElementById("tutor").classList.add("btn-light")
+        document.getElementById("student").classList.add("current-btn")
+
+        document.querySelector(".tutor-div").style.display = "none"
+        document.querySelector(".student-div").style.display = "block";
+       }
+       function tutor(){
+        document.getElementById("student").classList.remove("current-btn")
+        document.getElementById("tutor").classList.remove("btn-light")
+        document.getElementById("student").classList.add("btn-light")
+        document.getElementById("tutor").classList.add("current-btn")
+        document.querySelector(".student-div").style.display = "none"
+        document.querySelector(".tutor-div").style.display = "block";
+       }
+
+       function registerS(){
+           var regDiv = document.querySelector(".register");
+           regDiv.style.display = "block";
+           var post = document.querySelector(".card1");
+           post.style.height = "650px";
+           
+          }
+   </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    
+</body>
+</html>
