@@ -6,9 +6,11 @@
     <title>TutorFirst</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <link href="css/style.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/b765aa6eee.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="mynav">
+    <div class="mynav" id="NAV">
 
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -19,13 +21,13 @@
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav ml-auto">
           <a class="nav-item nav-link" href="#"></a>
-          <a class="nav-item nav-link" href="#">Login</a>
+          <a class="nav-item nav-link" href="#NAV">Login</a>
     
         </div>
       </div>
     </nav>
     </div>
-    <div class="container">
+    <div class="container" id="LOGIN">
       <div class="card1">
         <button id="student" onclick="student();" class="btn current-btn">Student</button>
         <button id="tutor" onclick="tutor();" class="btn btn-light">Tutor</button>
@@ -33,16 +35,19 @@
         <div class="student-div">
             <h1>Student</h1>
             <h2>Login</h2>
+        <form action="/loginS" method="POST">
             <label for="" >Email</label>
             <input name="studentEmail" type="text">
-
             <label for="">Password</label>
-            <input name="studentPass" type="text" name="" class="passId">
-            <button onclick="registerS();" class="register-btn">Register</button>
+            <input name="studentPass" type="password" name="" class="passId">
+            <button class="register-btn btn btn-light">Login</button>
+        </form>
+            <button onclick="registerS();" class="register-btn btn btn-light">Register</button>
             
             <hr>
-            <div style="display: none;" class="register">
+            <div style="display: none;" class="register-s">
                 <h2>Register</h2>
+            <form action="/registerS" method="POST">
                 <label for="">First Name</label>
                 <input name="studentFirst" type="text" name="" id="">
 
@@ -50,10 +55,12 @@
                 <input name="studentLast" type="text" name="" id="">
 
                 <label for="">Email Address</label>
-                <input name="studentEmail" type="text" name="" id="">
+                <input name="studentEmail" type="email" name="" id="">
 
                 <label for="">Password</label>
-                <input name="studentPass" type="text" name="" id="">
+                <input name="studentPass" type="password" name="" id="">
+                <button class="register-btn btn btn-light">Register</button>
+            </form>
             </div>
         </div>
 
@@ -62,15 +69,19 @@
         <div class="tutor-div" style="display: none;">
             <h1>Tutor</h1>
             <h2>Login</h2>
+        <form action="/loginT" method="POST">
             <label for="" >Email</label>
-            <input name="tutorName" type="text">
+            <input name="tutorEmail" type="text">
 
             <label for="" >Password</label>
             <input name="tutorPass" type="text" name="" class="passId">
-            <button onclick="registerT();" class="register-btn">Register</button>
+            <button class="register-btn btn btn-light">Login</button>
+        </form>
+            <button onclick="registerT();" class="register-btn btn btn-light">Register</button>
             <hr>
-            <div style="display: none;" class="register">
+            <div style="display: none;" class="register-t">
                 <h2>Register</h2>
+            <form action="/registerT" method="POST">
                 <label for="">First Name</label>
                 <input name="tutorFirst" type="text" name="" id="">
 
@@ -78,10 +89,13 @@
                 <input name="tutorLast" type="text" name="" id="">
 
                 <label for="">Email Address</label>
-                <input name="tutorEmail" type="text" name="" id="">
+                <input name="tutorEmail" type="email" name="" id="">
 
                 <label for="">Password</label>
-                <input name="tutorPass" type="text" name="" id="">
+                <input name="tutorPass" type="password" name="" id="">
+
+                <button class="register-btn btn btn-light">Register</button>
+            </form>
             </div>
         </div>
 
@@ -89,9 +103,10 @@
     </div>
 
     <div class="container-fluid mission-container">
-        <div class="row">
+        <div class="row" >
             <div class="col-lg-12">
                 <h1 class="mission-header"> Mission Statement</h1>
+                
                 <p id="mission-statement">Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
                     when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
@@ -107,29 +122,39 @@
     <div class="container-fluid review-container">
         <div class="row students-title" >
             <div class="col-lg-12">
-                <h1>Students</h1>
+                <h1>TutorFirst</h1>
             </div>
 
         </div>
         <div class="row student">
             <div class="col-lg-4">
-                <h2> Review1</h2>
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                <h3>Free for Low-Income Families</h3>
+                <div style="font-size:0.75rem">
+                  <i class="fas fa-user-friends fa-10x"></i>  
+                </div>
+                <p id="review-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
                     when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
 
             </div>
             <div class="col-lg-4">
-                <h2> Review2</h2>
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                <h2>Learn at your own pace</h2>
+                <div style="font-size:0.75rem">
+                    <i class="far fa-clock fa-10x"></i> 
+                  </div>
+
+                <p id="review-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
                     when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
 
 
               </div>
               <div class="col-lg-4">
-                <h2> Review3</h2>
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                <h2>1:1 Tutoring</h2>
+                <div style="font-size:0.75rem">
+                    <i class="far fa-smile-beam fa-10x"></i> 
+                  </div>
+                <p id="review-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
                     when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
 
@@ -141,16 +166,12 @@
     <footer>
         <div class="container-fluid footer-container">
             <div class="row">
-                <div class="col-lg-4">
-                    <ul>
-                        <li>Home</li>
-                        <li>Login</li>
-                        <li>Contact us</li>
+                <div class="col-lg-12">
+                    <ul style="list-style-type: none; margin: 0; padding: 0; overflow: hidden;">
+                        <li style="float: left; padding-right: 15px;"><a href="#NAV">Home</a></li>
+                        <li style="float: left; padding-left: 50px; padding-right: 50px;"><a href="#NAV">Login</a></li>
+                        <li style="float: left;">Contact us</li>
                     </ul>
-                    
-                </div>
-                <div class="col-lg-8">
-                    
                 </div>
             </div>
         </div>
@@ -164,6 +185,11 @@
 
         document.querySelector(".tutor-div").style.display = "none"
         document.querySelector(".student-div").style.display = "block";
+
+        var regDiv = document.querySelector(".register-t");
+        regDiv.style.display = "none";
+        var post = document.querySelector(".card1");
+        post.style.height = "370px";
        }
        function tutor(){
         document.getElementById("student").classList.remove("current-btn")
@@ -172,15 +198,26 @@
         document.getElementById("tutor").classList.add("current-btn")
         document.querySelector(".student-div").style.display = "none"
         document.querySelector(".tutor-div").style.display = "block";
+        
+        var regDiv = document.querySelector(".register-s");
+        regDiv.style.display = "none";
+        var post = document.querySelector(".card1");
+        post.style.height = "370px";
        }
 
        function registerS(){
-           var regDiv = document.querySelector(".register");
+           var regDiv = document.querySelector(".register-s");
            regDiv.style.display = "block";
            var post = document.querySelector(".card1");
-           post.style.height = "650px";
-           
-          }
+           post.style.height = "750px";
+        }
+
+        function registerT(){
+           var regDiv = document.querySelector(".register-t");
+           regDiv.style.display = "block";
+           var post = document.querySelector(".card1");
+           post.style.height = "750px";
+        }
    </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

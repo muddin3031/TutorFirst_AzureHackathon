@@ -1,3 +1,7 @@
+body{
+  font-family: 'Nunito', sans-serif;
+}
+
 .navbar{
     background-color: #b8d1ff !important;
   }
@@ -28,7 +32,7 @@
 
 .card1{
     padding-top: 10px;
-    height: 318px;
+    height: 370px;
     min-height: 318px;
     width: 45%;
     min-width: 200px;
@@ -85,4 +89,9 @@ label{
 .student{
     padding-top: 50px;
     padding-bottom: 50px;
+}
+
+#review-text{
+  padding-left: 20px;
+  padding-right: 20px;
 }
