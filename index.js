@@ -32,16 +32,18 @@ const studentSchema = new mongoose.Schema ({
     email: String,
     password: String,
     fName: String,
-    lName: String
+    lName: String,
+    appts: Array
 })
 
 const tutorSchema = new mongoose.Schema ({
     email: String,
     password: String,
     fName: String,
-    lName: String
+    lName: String,
+    days: Object,
+    subject: String
 })
-
 
 const Student = new mongoose.model("Student", studentSchema)
 const Tutor = new mongoose.model("Tutor", tutorSchema)
@@ -109,10 +111,8 @@ app.post("/loginT", function(req, res){
         }
         else{
             if (foundTutor){
-                console.log(foundTutor)
                 if (foundTutor.password == password){
                     req.session.user = foundTutor
-                    console.log(req.session.user.email);
                     res.redirect("/tutor")
                 }
                 else{
@@ -146,6 +146,7 @@ app.post("/registerS",function(req,res){
                     password: pass,
                     fName: firstName,
                     lName: lastName,
+                    appts: []
                 })
                 currUser.save(function(err) {
                     if (err) {
@@ -161,9 +162,9 @@ app.post("/registerS",function(req,res){
 })
 
 app.post("/registerT",function(req,res){
-    const newEmail= req.body.tutorEmail
-    const firstName=req.body.tutorFirst
-    const lastName=req.body.tutorLast
+    const newEmail = req.body.tutorEmail
+    const firstName = req.body.tutorFirst
+    const lastName = req.body.tutorLast
     const pass = req.body.tutorPass
     Tutor.findOne({email: newEmail}, function(err, foundTutor){
         if (err){
@@ -179,6 +180,17 @@ app.post("/registerT",function(req,res){
                     password: pass,
                     fName: firstName,
                     lName: lastName,
+                    days: {
+                        'Monday':{},
+                        'Tuesday':{},
+                        'Wednesday':{},
+                        'Thursday':{},
+                        'Friday':{},
+                        'Saturday':{},
+                        'Sunday':{}
+
+                    },
+                    subject: ""
                 })
 
                 currUser.save(function(err) {
@@ -186,7 +198,7 @@ app.post("/registerT",function(req,res){
                         console.log(err);
                     }
                     else {
-                        res.redirect("/ ")
+                        res.redirect("/")
                     }
                 }) 
                 
@@ -197,7 +209,44 @@ app.post("/registerT",function(req,res){
     
 })
 
+app.post('/schedule', function(req, res) {
+    const date = req.body.apptDate
+    const subject = req.body.subjects
+    const time = req.body.time
+    
+    // Tutor.findOne({time: })
+    res.redirect('/student')
+    
+})
+
+app.post("/addAvail", function(req,res) {
+    const day = req.body.days
+    console.log(day);
+    const startTime = req.body.startTime
+    const endTime = req.body.endTime
+    Tutor.findOne({email: req.session.user.email}, function(err, foundTutor){
+        if (err){
+            console.log(err);
+        }
+        else {
+            console.log(foundTutor);
+            foundTutor.days[day][startTime] = endTime
+            console.log(foundTutor.days[day])
+            foundTutor.save()
+            // res.redirect("/tutor")
+        }
+    })
+    
+})
 
 app.listen(3000,function(){
    console.log("Server port 3000 is running") 
+//    Tutor.findOne({email: "tutorfm@gmail"}, function(err, foundTutor){
+//     if (err){
+//         console.log(err);
+//     }
+//     else {
+//     console.log(foundTutor.days["Thursday"]);
+//     }
+// })
 });

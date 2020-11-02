@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v4.1.1">
-    <title>Studet Dashboard</title>
+    <title>Tutor Dashboard</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
     <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@
       }
     </style>
     <!-- Custom styles for this template -->
-    <link href="css/student.css" rel="stylesheet">
+    <link href="css/tutor.css" rel="stylesheet">
   </head>
   <body>
 <div class="container-fluid">
@@ -92,7 +92,7 @@
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
 <div id="overview">
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Welcome, <%=studentObj.fName %>!</h1>
+    <h1 class="h2">Welcome, <%=tutorObj.fName %>!</h1>
   </div>
   <h1>Overview</h1>
 </div>
@@ -101,28 +101,61 @@
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Appointments</h1>
       </div>
-
+    
       <div class="btn-toolbar mb-2 mb-md-0">
-        <h1 style="padding-bottom:10px ;">Schedule an Appointment</h1>
-        <form action="/schedule" method="POST">
-          <label for="apptDate">Choose a date:</label>
-          <input type="date" name="apptDate" class="btn btn-sm btn-outline-secondary">
-          <label for="subject" style="padding-left:10px ;">Choose subject:</label>
-             <select class="btn btn-sm btn-outline-secondary" id="subjects" name="subjects">
-               <option value="english">English</option>
-               <option value="math">Math</option>
-               <option value="biology">Biology</option>
-               <option value="chemistry">Chemistry</option>
-               <option value="physics">Physics</option>
-             </select>
-             <label for="" style="margin-left: 10px;">Choose a time:</label>
-             <input class="btn btn-sm btn-outline-secondary" type="time" name="time">
-             <div class="btn-group mr-2">
-              <button type="submit" class="btn btn-sm btn-outline-secondary" style="margin-left: 10px;">Schedule</button>
-            </div>
-         </form>
+        <h1 style="padding-bottom:10px ;">Edit your Availability</h1>
+        <button class="btn btn-sm btn-outline-secondary" onclick="addAvail();" id="availBtn">Add Availabilty +</button>
       
       </div>
+      <table class="avail-table"> 
+        <tr>
+            <th>Sunday</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+          </tr>
+
+          <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+          </tr>
+    </table>
+<div id="overlay">
+    <div id="popup-div"><h1>Add Availability</h1>
+        <button class="btn" onclick="close1();" id="ClosepopBtn">X</button>
+        <form action="/addAvail" method="POST">
+          <div class="row">
+            <label class="popup-labels" for="" id="dayInput">Day</label>
+            <select class="btn btn-sm btn-outline-secondary" id="days" name="days">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+            </div>
+            <div class="row">
+              <label class="popup-labels"for="startTime">Start Time</label>
+              <input class="popup-input" type="time" name="startTime" id="">
+            </div>
+          <div class="row">
+            <label class="popup-labels" for="endTime">End Time</label>
+            <input class="popup-input" type="time" name="endTime">
+          </div>
+          <button id="sub-avail" class="btn btn-light" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
       <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
       <h2>Section title</h2>
       <div class="table-responsive">
@@ -309,6 +342,13 @@
         overViewDiv.style.display = "none"
         assignment.style.display = "none"
         grades.style.display = "block"
+    }
+    function addAvail(){
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    function close1(){
+        document.getElementById("overlay").style.display = "none";
     }
 </script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
