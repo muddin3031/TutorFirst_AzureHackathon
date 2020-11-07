@@ -41,7 +41,13 @@ const tutorSchema = new mongoose.Schema ({
     password: String,
     fName: String,
     lName: String,
-    days: Object,
+    monday: Array,
+    tuesday: Array,
+    wednesday: Array,
+    thursday: Array,
+    friday: Array,
+    saturday: Array,
+    sunday: Array,
     subject: String
 })
 
@@ -70,7 +76,7 @@ app.get("/tutor",function(req,res){
         }
         else{
             
-            res.render("tutor",{tutorObj: foundTutor})
+            res.render("tutor", {tutorObj: foundTutor})
         }
     })
 })
@@ -180,16 +186,13 @@ app.post("/registerT",function(req,res){
                     password: pass,
                     fName: firstName,
                     lName: lastName,
-                    days: {
-                        'Monday':{},
-                        'Tuesday':{},
-                        'Wednesday':{},
-                        'Thursday':{},
-                        'Friday':{},
-                        'Saturday':{},
-                        'Sunday':{}
-
-                    },
+                    monday: [],
+                    tuesday: [],
+                    wednesday: [],
+                    thursday: [],
+                    friday: [],
+                    saturday: [],
+                    sunday: [],
                     subject: ""
                 })
 
@@ -205,16 +208,86 @@ app.post("/registerT",function(req,res){
             }
         }
     })
-    
-    
+})
+
+app.get("/delete", function(req, res){
+    const day = req.query.DAY
+    const index = req.query.INDEX
+    console.log(day);
+    console.log(index);
+    // Implement Delete
+    res.redirect("/tutor")
 })
 
 app.post('/schedule', function(req, res) {
     const date = req.body.apptDate
     const subject = req.body.subjects
     const time = req.body.time
+    const newDate=date.slice(0,4)+"/"+date.slice(5,7)+"/"+date.slice(8,10)
+    console.log(newDate)
+    const dayofWeek= new Date(newDate).getDay()
+    Tutor.find({},function(err,tutors){
+        if (err){
+            console.log(err);
+        }
+        else{
+            var found = false
+            
+            
+            for(i=0; i < tutors.length; i++){
+                if(dayofWeek==0){
+                    const hour= parseInt(time.slice(0,3))
+                    const min = parseInt(time.slice(4,6))
+                    for(j=0;j<tutors[i].sunday.length;j++ ){
+                        const tutorHour=parseInt(tutors[i].sunday[j].slice(0,3))-1
+                        const tutorMin = parseInt(tutors[i].sunday[j].slice(4,6))
+                        if(tutorHour>hour && (j+1)%2==0 && min<=tutorMin){
+                            found = true
+                            const tutorFname=tutors[i].fName
+                            const tutorLname=tutors[i].lName
+                            const tutoremail=tutors[i].email
+                        }
+                    }
     
-    // Tutor.findOne({time: })
+    
+                }
+                if(dayofWeek==1){
+                    newDay="Monday"
+    
+    
+                }
+                if(dayofWeek==2){
+                    newDay="Tuesday"
+    
+    
+                }
+                if(dayofWeek==3){
+                    newDay="Wednesday"
+    
+    
+                }
+                if(dayofWeek==4){
+                    newDay="Thursday"
+    
+    
+                }
+                if(dayofWeek==5){
+                    newDay="Friday"
+    
+    
+                }
+                if(dayofWeek==6){
+                    newDay="Saturday"
+    
+    
+                }
+            
+
+            }
+        }
+
+
+    })
     res.redirect('/student')
     
 })
@@ -229,11 +302,37 @@ app.post("/addAvail", function(req,res) {
             console.log(err);
         }
         else {
-            console.log(foundTutor);
-            foundTutor.days[day][startTime] = endTime
-            console.log(foundTutor.days[day])
+            if (day=="Monday"){
+                foundTutor.monday.push(startTime)
+                foundTutor.monday.push(endTime)
+            }
+            else if (day=="Tuesday"){
+                foundTutor.tuesday.push(startTime)
+                foundTutor.tuesday.push(endTime)   
+            }
+            else if (day=="Wednesday"){
+                foundTutor.wednesday.push(startTime)
+                foundTutor.wednesday.push(endTime)
+            }
+            else if (day=="Thursday"){
+                foundTutor.thursday.push(startTime)
+                foundTutor.thursday.push(endTime)
+            }
+            else if (day=="Friday"){
+                foundTutor.friday.push(startTime)
+                foundTutor.friday.push(endTime)
+                
+            }
+            else if (day=="Saturday"){
+                foundTutor.saturday.push(startTime)
+                foundTutor.saturday.push(endTime)
+            }
+            else if (day=="Sunday"){
+                foundTutor.sunday.push(startTime)
+                foundTutor.sunday.push(endTime)
+            }
             foundTutor.save()
-            // res.redirect("/tutor")
+            res.redirect("/tutor")
         }
     })
     

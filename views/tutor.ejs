@@ -119,13 +119,73 @@
           </tr>
 
           <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>
+                <% for (var i = 0; i < tutorObj.sunday.length; i=i+2) {%>
+                  <div class="time-slot">
+                    <form action="">
+                  
+                  </form>
+                    <h1 class="time-banner"><%= tutorObj.sunday[i] %></h1>
+                    <h1 class="time-banner"><%= tutorObj.sunday[i+1] %></h1>
+                  </div>
+                  <hr style="visibility: hidden;">
+                <% } %>
+              </td>
+              <td>
+                <% for (var i = 0; i < tutorObj.monday.length; i=i+2) {%>
+                  <div class="time-slot">
+                    <a href="/delete?DAY=monday&INDEX=<%= i %>">X</a>
+                    <h1 class="time-banner"><%= tutorObj.monday[i] %></h1>
+                    <h1 class="time-banner"><%= tutorObj.monday[i+1] %></h1>
+                  </div>
+                  <hr style="visibility: hidden;">
+                <% } %>
+              </td>
+              <td>
+                <% for (var i = 0; i < tutorObj.tuesday.length; i=i+2) {%>
+                  <div class="time-slot">
+                    <h1 class="time-banner"><%= tutorObj.tuesday[i]%></h1>
+                    <h1 class="time-banner"><%= tutorObj.tuesday[i+1]%></h1>
+                  </div>
+                  <hr style="visibility: hidden;">
+                <% } %>
+              </td>
+              <td>
+                <% for (var i = 0; i < tutorObj.wednesday.length; i=i+2) {%>
+                  <div class="time-slot">
+                    <h1 class="time-banner"><%= tutorObj.wednesday[i]%></h1>
+                    <h1 class="time-banner"><%= tutorObj.wednesday[i+1]%></h1>
+                  </div>
+                  <hr style="visibility: hidden;">
+                <% } %>
+              </td>
+              <td>
+                <% for (var i = 0; i < tutorObj.thursday.length; i=i+2) {%>
+                  <div class="time-slot">
+                    <h1 class="time-banner"><%= tutorObj.thursday[i]%></h1>
+                    <h1 class="time-banner"><%= tutorObj.thursday[i+1]%></h1>
+                  </div>
+                  <hr style="visibility: hidden;">
+                <% } %>
+              </td>
+              <td>
+                <% for (var i = 0; i < tutorObj.friday.length; i=i+2) {%>
+                  <div class="time-slot">
+                    <h1 class="time-banner"><%= tutorObj.friday[i]%></h1>
+                    <h1 class="time-banner"><%= tutorObj.friday[i+1]%></h1>
+                  </div>
+                  <hr style="visibility: hidden;">
+                <% } %>
+              </td>
+              <td>
+                <% for (var i = 0; i < tutorObj.saturday.length; i=i+2) {%>
+                  <div class="time-slot">
+                    <h1 class="time-banner"><%= tutorObj.saturday[i]%></h1>
+                    <h1 class="time-banner"><%= tutorObj.saturday[i+1]%></h1>
+                  </div>
+                  <hr style="visibility: hidden;">
+                <% } %>
+              </td>
           </tr>
     </table>
 <div id="overlay">
