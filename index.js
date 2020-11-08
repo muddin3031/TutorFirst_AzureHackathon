@@ -5,6 +5,7 @@ const md5 = require("md5")
 const mongoose = require("mongoose")
 const session = require("client-sessions")
 const URI = "mongodb+srv://fmash1539:Byzf5S9OOW48qrNy@tutorcluster.anlqz.mongodb.net/tutoring?retryWrites=true&w=majority"
+const flash = require('connect-flash')
 
 const app = express()
 
@@ -18,6 +19,8 @@ app.use(session({
   }));
 
 app.use(express.static("public"));
+
+app.use(flash())
 
 const connectDB = async()=>{
     await mongoose.connect(URI, {useUnifiedTopology: true, useNewUrlParser: true});
@@ -48,7 +51,10 @@ const tutorSchema = new mongoose.Schema ({
     friday: Array,
     saturday: Array,
     sunday: Array,
-    subject: String
+    subject: String,
+    students: Array,
+    apptDates: Array,
+    apptTimes: Array
 })
 
 const Student = new mongoose.model("Student", studentSchema)
@@ -64,7 +70,7 @@ app.get('/student', function(req, res) {
             console.log(err);
         }
         else{
-            res.render("student", {studentObj: foundStudent})
+            res.render("student", {studentObj: foundStudent, message: req.flash('message')})
         }
     })
 })
@@ -75,8 +81,9 @@ app.get("/tutor",function(req,res){
             console.log(err)
         }
         else{
-            
-            res.render("tutor", {tutorObj: foundTutor})
+            console.log("FoundTutor Obj after redirect: ");
+            console.log(foundTutor);
+            res.render("tutor", {tutorObj: foundTutor, message: req.flash('message')})
         }
     })
 })
@@ -101,7 +108,6 @@ app.post("/loginS", function(req, res) {
             else {
                 res.send("Looks like a student with specified email doesn't exist. Please make an account")
             }  
-            
         }
     })
 })
@@ -193,7 +199,10 @@ app.post("/registerT",function(req,res){
                     friday: [],
                     saturday: [],
                     sunday: [],
-                    subject: ""
+                    subject: "",
+                    students: [],
+                    apptDates: [],
+                    apptTimes: []
                 })
 
                 currUser.save(function(err) {
@@ -216,126 +225,166 @@ app.get("/delete", function(req, res){
     console.log(day);
     console.log(index);
     // Implement Delete
-    res.redirect("/tutor")
-})
-
-app.post('/schedule', function(req, res) {
-    const date = req.body.apptDate
-    const subject = req.body.subjects
-    const time = req.body.time
-    const newDate=date.slice(0,4)+"/"+date.slice(5,7)+"/"+date.slice(8,10)
-    console.log(newDate)
-    const dayofWeek= new Date(newDate).getDay()
-    Tutor.find({},function(err,tutors){
+    Tutor.findOne({email: req.session.user.email}, function(err, foundTutor) {
         if (err){
             console.log(err);
         }
-        else{
-            var found = false
-            
-            
-            for(i=0; i < tutors.length; i++){
-                if(dayofWeek==0){
-                    const hour= parseInt(time.slice(0,3))
-                    const min = parseInt(time.slice(4,6))
-                    for(j=0;j<tutors[i].sunday.length;j++ ){
-                        const tutorHour=parseInt(tutors[i].sunday[j].slice(0,3))-1
-                        const tutorMin = parseInt(tutors[i].sunday[j].slice(4,6))
-                        if(tutorHour>hour && (j+1)%2==0 && min<=tutorMin){
-                            found = true
-                            const tutorFname=tutors[i].fName
-                            const tutorLname=tutors[i].lName
-                            const tutoremail=tutors[i].email
-                        }
-                    }
-    
-    
-                }
-                if(dayofWeek==1){
-                    newDay="Monday"
-    
-    
-                }
-                if(dayofWeek==2){
-                    newDay="Tuesday"
-    
-    
-                }
-                if(dayofWeek==3){
-                    newDay="Wednesday"
-    
-    
-                }
-                if(dayofWeek==4){
-                    newDay="Thursday"
-    
-    
-                }
-                if(dayofWeek==5){
-                    newDay="Friday"
-    
-    
-                }
-                if(dayofWeek==6){
-                    newDay="Saturday"
-    
-    
-                }
-            
-
-            }
+        else {
+            console.log(foundTutor[day]);
+            foundTutor[day].splice(index, 2)
+            console.log(foundTutor[day]);
+            foundTutor.save()
+            res.redirect("/tutor")           
         }
-
-
     })
-    res.redirect('/student')
     
 })
 
-app.post("/addAvail", function(req,res) {
-    const day = req.body.days
-    console.log(day);
-    const startTime = req.body.startTime
-    const endTime = req.body.endTime
+app.post('/subject', function(req,res){
+    const subject = req.body.subjects
     Tutor.findOne({email: req.session.user.email}, function(err, foundTutor){
         if (err){
             console.log(err);
         }
         else {
-            if (day=="Monday"){
-                foundTutor.monday.push(startTime)
-                foundTutor.monday.push(endTime)
-            }
-            else if (day=="Tuesday"){
-                foundTutor.tuesday.push(startTime)
-                foundTutor.tuesday.push(endTime)   
-            }
-            else if (day=="Wednesday"){
-                foundTutor.wednesday.push(startTime)
-                foundTutor.wednesday.push(endTime)
-            }
-            else if (day=="Thursday"){
-                foundTutor.thursday.push(startTime)
-                foundTutor.thursday.push(endTime)
-            }
-            else if (day=="Friday"){
-                foundTutor.friday.push(startTime)
-                foundTutor.friday.push(endTime)
-                
-            }
-            else if (day=="Saturday"){
-                foundTutor.saturday.push(startTime)
-                foundTutor.saturday.push(endTime)
-            }
-            else if (day=="Sunday"){
-                foundTutor.sunday.push(startTime)
-                foundTutor.sunday.push(endTime)
-            }
+            foundTutor.subject = subject
             foundTutor.save()
             res.redirect("/tutor")
         }
     })
+})
+
+
+app.post('/schedule', function(req, res) {
+    const date = req.body.apptDate
+    const subject = req.body.subjects
+    console.log("From Input: ");
+    console.log(subject);
+    const time = req.body.time
+    const newDate=date.slice(0,4)+"/"+date.slice(5,7)+"/"+date.slice(8,10)
+    console.log(newDate)
+    const dayofWeek= new Date(newDate).getDay()
+    const days=["sunday","monday","tuesday","wednesday","thursday","friday", "saturday"]
+    if (parseInt(time.slice(3,5)) % 5 != 0){
+        req.flash('message', 'Minutes is not in an interval of 5')
+        res.redirect("/student")
+    }
+    else{
+    Tutor.find({},function(err,tutors){
+        if(err){ 
+            console.log(err)
+        }
+        else{
+            var found = false;
+            for (var i = 0; i < tutors.length; i++) {
+                for (var j = 0; j < tutors[i][days[dayofWeek]].length;j=j+3){
+                    console.log("from database: ");
+                    console.log(tutors[i].subject)
+                    console.log(parseInt(time.slice(0,2))==parseInt(tutors[i][days[dayofWeek]][j].slice(0,2)))
+                    console.log(parseInt(time.slice(3,5))==parseInt(tutors[i][days[dayofWeek]][j].slice(3,5)))
+                    if (parseInt(time.slice(0,2))==parseInt(tutors[i][days[dayofWeek]][j].slice(0,2)) 
+                    && parseInt(time.slice(3,5))==parseInt(tutors[i][days[dayofWeek]][j].slice(3,5)) 
+                    && subject == tutors[i].subject && tutors[i][days[dayofWeek]][j+2] != true) {
+                        console.log("from database: ");
+                        console.log(tutors[i].subject)
+                        tutors[i].apptDates.push(newDate)
+                        tutors[i].apptTimes.push(time)
+                        tutors[i][days[dayofWeek]][j+2] = true
+                        const fullName = req.session.user.fName + " " + req.session.user.lName
+                        tutors[i].students.push(req.session.user.fName + " " +req.session.user.lName)
+                        tutors[i].save()
+                        found = true
+                        res.redirect("/student")
+                    }
+                }
+            }
+            if (!found){
+                req.flash('message', "No tutor is available at this time slot")
+                res.redirect('/student')
+            }
+        }
+    })
+}
+})
+
+app.post("/addAvail", function(req,res) {
+    var day = req.body.days
+    day = day.toLowerCase()
+    console.log(day);   
+    const startTime = req.body.startTime
+    const endTime = req.body.endTime
+    console.log(parseInt(startTime.slice(3,5)))
+    console.log(parseInt(endTime.slice(3,5)))
+
+    console.log(parseInt(startTime.slice(3,5)) % 5 != 0)
+    //6:55 - 7:56
+    //GOTTA FIX THIS
+    if (parseInt(startTime.slice(3,5)) % 5 != 0 || parseInt(endTime.slice(3,5)) % 5 != 0){ //if start min is not interval of 5
+        if ( (parseInt(startTime.slice(0,2))+1 != parseInt(endTime.slice(0,2))) 
+        && (parseInt(startTime.slice(3,5)) != parseInt(endTime.slice(3,5)))){ // if its not 1 hr
+            req.flash('message', 'Minutes is not in an interval of 5 and it is not one hour')
+            console.log("here1")
+            res.redirect('/tutor')
+            
+        }
+        else{
+            req.flash('message', 'Minutes is not in an interval of 5')
+            console.log("here2")
+            res.redirect('/tutor')
+        }
+    }          //7                                      7                                      
+    else if( (parseInt(startTime.slice(0,2))+1 != parseInt(endTime.slice(0,2))) && (parseInt(startTime.slice(3,5)) != parseInt(endTime.slice(3,5))) ){ //if its not 1 hr
+        if ( parseInt(startTime.slice(3,5)) % 5 != 0){ // if start min is not interval of 5
+            req.flash('message', "Minutes is not an interval of 5 and it is not one hour")
+            console.log("here3")
+            res.redirect('/tutor')
+        }
+        else {
+            req.flash('message', 'Not one hour')
+            console.log("here4")
+            res.redirect('/tutor')
+        }  
+        
+            
+    }
+    else if((parseInt(startTime.slice(3,5)) != parseInt(endTime.slice(3,5))) ){
+        if((parseInt(startTime.slice(3,5)) % 5 != 0 || parseInt(endTime.slice(3,5)) % 5 != 0) && (parseInt(startTime.slice(0,2))+1 != parseInt(endTime.slice(0,2)))){
+            req.flash('message',"Minutes is not an interval of 5 and it is not one hour")
+            console.log("here5")
+            res.redirect('/tutor')
+        }
+        else{
+            req.flash('message', 'Not an hour')
+            console.log("here6")
+            res.redirect('/tutor')
+        }
+    }
     
+    else {
+        Tutor.findOne({email: req.session.user.email}, function(err, foundTutor){
+            if (err){
+                console.log(err);
+            }
+            else {
+                var failed= false
+                for (var i = 0; i < foundTutor.monday.length; i=i+3){
+                    if ( parseInt(foundTutor.monday[i].slice(0,2)) == parseInt(startTime.slice(0,2)) ) { // if hour is equal
+                            failed = true
+                            console.log("hey");
+                            req.flash('message', "Already occupied!")
+                            res.redirect('/tutor')
+                        }
+                }
+                if (failed == false){
+                    foundTutor[day].push(startTime)
+                    foundTutor[day].push(endTime)
+                    foundTutor[day].push(false)
+                    foundTutor.save()
+                    res.redirect("/tutor")
+                }
+            }
+        })
+    }
 })
 
 app.listen(3000,function(){

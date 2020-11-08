@@ -109,14 +109,19 @@
           <input type="date" name="apptDate" class="btn btn-sm btn-outline-secondary">
           <label for="subject" style="padding-left:10px ;">Choose subject:</label>
              <select class="btn btn-sm btn-outline-secondary" id="subjects" name="subjects">
-               <option value="english">English</option>
-               <option value="math">Math</option>
-               <option value="biology">Biology</option>
-               <option value="chemistry">Chemistry</option>
-               <option value="physics">Physics</option>
+               <option value="English">English</option>
+               <option value="Math">Math</option>
+               <option value="Biology">Biology</option>
+               <option value="Chemistry">Chemistry</option>
+               <option value="Physics">Physics</option>
              </select>
              <label for="" style="margin-left: 10px;">Choose a time:</label>
              <input class="btn btn-sm btn-outline-secondary" type="time" name="time">
+             <% if (message.length > 0) { %>
+              <div class="alert alert-danger">
+                <%= message %>
+              </div>
+             <% } %>
              <div class="btn-group mr-2">
               <button type="submit" class="btn btn-sm btn-outline-secondary" style="margin-left: 10px;">Schedule</button>
             </div>

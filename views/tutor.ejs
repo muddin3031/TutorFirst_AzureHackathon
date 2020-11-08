@@ -95,6 +95,18 @@
     <h1 class="h2">Welcome, <%=tutorObj.fName %>!</h1>
   </div>
   <h1>Overview</h1>
+  <h2>Current Subject: <%= tutorObj.subject %></h2>
+  <form action="/subject" method="POST">
+  <label class="popup-labels" for="" id="subjectInput">Subject</label>
+            <select class="btn btn-sm btn-outline-secondary" id="subjects" name="subjects">
+                <option value="English">English</option>
+                <option value="Biology">Biology</option>
+                <option value="Math">Math</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+              </select>
+              <button class="btn btn-light">Save</button>
+            </form>
 </div>
         
 <div id="appointments">
@@ -120,11 +132,9 @@
 
           <tr>
               <td>
-                <% for (var i = 0; i < tutorObj.sunday.length; i=i+2) {%>
+                <% for (var i = 0; i < tutorObj.sunday.length; i=i+3) {%>
                   <div class="time-slot">
-                    <form action="">
-                  
-                  </form>
+                    <a href="/delete?DAY=sunday&INDEX=<%= i %>" style="float: right;">X</a>
                     <h1 class="time-banner"><%= tutorObj.sunday[i] %></h1>
                     <h1 class="time-banner"><%= tutorObj.sunday[i+1] %></h1>
                   </div>
@@ -132,9 +142,9 @@
                 <% } %>
               </td>
               <td>
-                <% for (var i = 0; i < tutorObj.monday.length; i=i+2) {%>
+                <% for (var i = 0; i < tutorObj.monday.length; i=i+3) {%>
                   <div class="time-slot">
-                    <a href="/delete?DAY=monday&INDEX=<%= i %>">X</a>
+                    <a href="/delete?DAY=monday&INDEX=<%= i %>" style="float: right;">X</a>
                     <h1 class="time-banner"><%= tutorObj.monday[i] %></h1>
                     <h1 class="time-banner"><%= tutorObj.monday[i+1] %></h1>
                   </div>
@@ -142,8 +152,9 @@
                 <% } %>
               </td>
               <td>
-                <% for (var i = 0; i < tutorObj.tuesday.length; i=i+2) {%>
+                <% for (var i = 0; i < tutorObj.tuesday.length; i=i+3) {%>
                   <div class="time-slot">
+                    <a href="/delete?DAY=tuesday&INDEX=<%= i %>" style="float: right;">X</a>
                     <h1 class="time-banner"><%= tutorObj.tuesday[i]%></h1>
                     <h1 class="time-banner"><%= tutorObj.tuesday[i+1]%></h1>
                   </div>
@@ -151,8 +162,9 @@
                 <% } %>
               </td>
               <td>
-                <% for (var i = 0; i < tutorObj.wednesday.length; i=i+2) {%>
+                <% for (var i = 0; i < tutorObj.wednesday.length; i=3) {%>
                   <div class="time-slot">
+                    <a href="/delete?DAY=wednesday&INDEX=<%= i %>" style="float: right;">X</a>
                     <h1 class="time-banner"><%= tutorObj.wednesday[i]%></h1>
                     <h1 class="time-banner"><%= tutorObj.wednesday[i+1]%></h1>
                   </div>
@@ -160,8 +172,9 @@
                 <% } %>
               </td>
               <td>
-                <% for (var i = 0; i < tutorObj.thursday.length; i=i+2) {%>
+                <% for (var i = 0; i < tutorObj.thursday.length; i=i+3) {%>
                   <div class="time-slot">
+                    <a href="/delete?DAY=thursday&INDEX=<%= i %>" style="float: right;">X</a>
                     <h1 class="time-banner"><%= tutorObj.thursday[i]%></h1>
                     <h1 class="time-banner"><%= tutorObj.thursday[i+1]%></h1>
                   </div>
@@ -169,8 +182,9 @@
                 <% } %>
               </td>
               <td>
-                <% for (var i = 0; i < tutorObj.friday.length; i=i+2) {%>
+                <% for (var i = 0; i < tutorObj.friday.length; i=i+3) {%>
                   <div class="time-slot">
+                    <a href="/delete?DAY=friday&INDEX=<%= i %>" style="float: right;">X</a>
                     <h1 class="time-banner"><%= tutorObj.friday[i]%></h1>
                     <h1 class="time-banner"><%= tutorObj.friday[i+1]%></h1>
                   </div>
@@ -178,8 +192,9 @@
                 <% } %>
               </td>
               <td>
-                <% for (var i = 0; i < tutorObj.saturday.length; i=i+2) {%>
+                <% for (var i = 0; i < tutorObj.saturday.length; i=i+3) {%>
                   <div class="time-slot">
+                    <a href="/delete?DAY=saturday&INDEX=<%= i %>" style="float: right;">X</a>
                     <h1 class="time-banner"><%= tutorObj.saturday[i]%></h1>
                     <h1 class="time-banner"><%= tutorObj.saturday[i+1]%></h1>
                   </div>
@@ -214,6 +229,11 @@
           </div>
           <button id="sub-avail" class="btn btn-light" type="submit">Submit</button>
         </form>
+        <% if (message.length > 0) { %>
+            <div class="alert alert-danger">
+              <%= message %>
+            </div>
+        <% } %>
     </div>
 </div>
       <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
@@ -222,126 +242,22 @@
         <table class="table table-striped table-sm">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Header</th>
-              <th>Header</th>
-              <th>Header</th>
-              <th>Header</th>
+              <th>Date</th>
+              <th>Student Name</th>
+              <th>Appointment Time</th>
+              <th>Zoom Link</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1,001</td>
-              <td>Lorem</td>
-              <td>ipsum</td>
-              <td>dolor</td>
-              <td>sit</td>
+            <% for (var i = 0; i < tutorObj.apptDates.length; i++) { %>
+              <tr>
+              <td><%= tutorObj.apptDates[i] %></td>
+              <td><%= tutorObj.students[i] %></td>
+              <td><%= tutorObj.apptTimes[i] %></td>
+              <td>hyperlink</td>
             </tr>
-            <tr>
-              <td>1,002</td>
-              <td>amet</td>
-              <td>consectetur</td>
-              <td>adipiscing</td>
-              <td>elit</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>Integer</td>
-              <td>nec</td>
-              <td>odio</td>
-              <td>Praesent</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>libero</td>
-              <td>Sed</td>
-              <td>cursus</td>
-              <td>ante</td>
-            </tr>
-            <tr>
-              <td>1,004</td>
-              <td>dapibus</td>
-              <td>diam</td>
-              <td>Sed</td>
-              <td>nisi</td>
-            </tr>
-            <tr>
-              <td>1,005</td>
-              <td>Nulla</td>
-              <td>quis</td>
-              <td>sem</td>
-              <td>at</td>
-            </tr>
-            <tr>
-              <td>1,006</td>
-              <td>nibh</td>
-              <td>elementum</td>
-              <td>imperdiet</td>
-              <td>Duis</td>
-            </tr>
-            <tr>
-              <td>1,007</td>
-              <td>sagittis</td>
-              <td>ipsum</td>
-              <td>Praesent</td>
-              <td>mauris</td>
-            </tr>
-            <tr>
-              <td>1,008</td>
-              <td>Fusce</td>
-              <td>nec</td>
-              <td>tellus</td>
-              <td>sed</td>
-            </tr>
-            <tr>
-              <td>1,009</td>
-              <td>augue</td>
-              <td>semper</td>
-              <td>porta</td>
-              <td>Mauris</td>
-            </tr>
-            <tr>
-              <td>1,010</td>
-              <td>massa</td>
-              <td>Vestibulum</td>
-              <td>lacinia</td>
-              <td>arcu</td>
-            </tr>
-            <tr>
-              <td>1,011</td>
-              <td>eget</td>
-              <td>nulla</td>
-              <td>Class</td>
-              <td>aptent</td>
-            </tr>
-            <tr>
-              <td>1,012</td>
-              <td>taciti</td>
-              <td>sociosqu</td>
-              <td>ad</td>
-              <td>litora</td>
-            </tr>
-            <tr>
-              <td>1,013</td>
-              <td>torquent</td>
-              <td>per</td>
-              <td>conubia</td>
-              <td>nostra</td>
-            </tr>
-            <tr>
-              <td>1,014</td>
-              <td>per</td>
-              <td>inceptos</td>
-              <td>himenaeos</td>
-              <td>Curabitur</td>
-            </tr>
-            <tr>
-              <td>1,015</td>
-              <td>sodales</td>
-              <td>ligula</td>
-              <td>in</td>
-              <td>libero</td>
-            </tr>
+            <% } %>
+            
           </tbody>
         </table>
       </div>
