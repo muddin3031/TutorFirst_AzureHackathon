@@ -250,11 +250,11 @@
           </thead>
           <tbody>
             <% for (var i = 0; i < tutorObj.apptDates.length; i++) { %>
-              <tr>
+              <tr> 
               <td><%= tutorObj.apptDates[i] %></td>
               <td><%= tutorObj.students[i] %></td>
               <td><%= tutorObj.apptTimes[i] %></td>
-              <td>hyperlink</td>
+              <td><a href="/room?room_id=<%= tutorObj._id %>" target="_blank">Room Link</a></td>
             </tr>
             <% } %>
             

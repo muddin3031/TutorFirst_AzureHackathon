@@ -31,7 +31,17 @@
       <div class="card1">
         <button id="student" onclick="student();" class="btn current-btn">Student</button>
         <button id="tutor" onclick="tutor();" class="btn btn-light">Tutor</button>
-
+        <% if (message.length > 0) { %>
+            <% if (message == "Account successfully created. Please login") { %>
+              <div class="alert alert-success">
+                <%= message %>
+              </div>
+            <% } else { %>
+                <div class="alert alert-danger">
+                  <%= message %>
+                </div>
+            <% } %>
+            <% } %>
         <div class="student-div">
             <h1>Student</h1>
             <h2>Login</h2>

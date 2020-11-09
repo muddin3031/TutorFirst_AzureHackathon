@@ -9,6 +9,10 @@ const flash = require('connect-flash')
 
 const app = express()
 
+const server = require('http').Server(app)
+const socketio = require('socket.io')
+const io = socketio(server)
+
 app.set("view engine", "ejs");
 
 app.use(session({
@@ -60,8 +64,22 @@ const tutorSchema = new mongoose.Schema ({
 const Student = new mongoose.model("Student", studentSchema)
 const Tutor = new mongoose.model("Tutor", tutorSchema)
 
+function convert_military_to_twelve(time) {
+    var am = "AM"
+    var pm = "PM"
+    var timeString = ""
+    if (parseInt(time.slice(0,2)) <= 12) {
+        timeString = time + am
+    }
+    else {
+        timeString = parseInt(time.slice(0,2))%12 + ":" + parseInt(time.slice(3,5)) + pm
+    }
+    return timeString
+}
+
+
 app.get("/", function(req, res){
-    res.render("index")
+    res.render("index", {message: req.flash('message')})
 })
 
 app.get('/student', function(req, res) {
@@ -70,10 +88,28 @@ app.get('/student', function(req, res) {
             console.log(err);
         }
         else{
-            res.render("student", {studentObj: foundStudent, message: req.flash('message')})
+            res.render("student", {studentObj: foundStudent,  
+                message: req.flash('message')})
         }
     })
 })
+
+app.get('/room', function(req, res){
+    res.render('room', {roomId: req.query.room_id, email: req.session.user.email})
+    
+})
+
+io.on('connection', socket => {
+    socket.on('join-room', (roomId, userId) => {
+        socket.join(roomId)
+        socket.to(roomId).broadcast.emit('user-connected', userId)
+  
+        socket.on('disconnect', () => {
+            socket.to(roomId).broadcast.emit('user-disconnected', userId)
+      })
+    })
+  })
+
 
 app.get("/tutor",function(req,res){
     Tutor.findOne({email:req.session.user.email},function(err,foundTutor){
@@ -89,154 +125,165 @@ app.get("/tutor",function(req,res){
 })
 
 app.post("/loginS", function(req, res) {
-    const pass = req.body.studentPass
-    const email = req.body.studentEmail
-    Student.findOne({email: email}, function(err, foundStudent) {
-        if (err) {
-            console.log(err)
-        }
-        else {
-            if (foundStudent) {
-                if (foundStudent.password == pass) {
-                    req.session.user = foundStudent
-                    res.redirect('/student')
-                }
-                else {
-                    res.send("ERROR: Email or password id incorrect. Please try again")
-                }     
+        const pass = req.body.studentPass
+        const email = req.body.studentEmail
+        Student.findOne({email: email}, function(err, foundStudent) {
+            if (err) {
+                console.log(err)
             }
             else {
-                res.send("Looks like a student with specified email doesn't exist. Please make an account")
-            }  
-        }
-    })
+                if (foundStudent) {
+                    if (foundStudent.password == pass) {
+                        req.session.user = foundStudent
+                        res.redirect('/student')
+                    }
+                    else {
+                        req.flash('message', 
+                        "ERROR: Email or password id incorrect. Please try again")
+                    }     
+                }
+                else {
+                    req.flash('message', 
+                    "Looks like a student with specified email doesn't exist. Please make an account")
+                }  
+            }
+        })
 })
 
 
 app.post("/loginT", function(req, res){
-    const email = req.body.tutorEmail
-    const password = req.body.tutorPass
-
-    Tutor.findOne({email: email}, function(err, foundTutor){
-        if (err){
-            console.log(err);
-        }
-        else{
-            if (foundTutor){
-                if (foundTutor.password == password){
-                    req.session.user = foundTutor
-                    res.redirect("/tutor")
-                }
-                else{
-                    res.send("ERROR: Email or password id incorrect. Please try again")
-                }
+    if (req.session.user) {
+        res.redirect('/tutor')
+    }
+    else {
+        const email = req.body.tutorEmail
+        const password = req.body.tutorPass
+    
+        Tutor.findOne({email: email}, function(err, foundTutor){
+            if (err){
+                console.log(err);
             }
             else{
-                res.send("Looks like a Tutor with specified email does not exist")
+                if (foundTutor){
+                    if (foundTutor.password == password){
+                        req.session.user = foundTutor
+                        res.redirect("/tutor")
+                    }
+                    else{
+                        req.flash('message', "ERROR: Email or password id incorrect. Please try again")
+                    }
+                }
+                else{
+                    req.flash('message', "Looks like a Tutor with specified email does not exist")
+                }
             }
-        }
-    })
-    
+        })    
+    }
 })
 
 app.post("/registerS",function(req,res){
-    const newEmail= req.body.studentEmail
-    const firstName= req.body.studentFirst
-    const lastName = req.body.studentLast
-    const pass = req.body.studentPass
-    Student.findOne({email: newEmail}, function(err, foundStudent) {
-        if (err) {
-            console.log(err);
-        }
-        else{
-            if (foundStudent){
-                res.send("Email already exists")
+        const newEmail= req.body.studentEmail
+        const firstName= req.body.studentFirst
+        const lastName = req.body.studentLast
+        const pass = req.body.studentPass
+        Student.findOne({email: newEmail}, function(err, foundStudent) {
+            if (err) {
+                console.log(err);
             }
-            else {
-                const currUser = new Student ({
-                    email: newEmail,
-                    password: pass,
-                    fName: firstName,
-                    lName: lastName,
-                    appts: []
-                })
-                currUser.save(function(err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    else {
-                        res.redirect("/")
-                    }
-                })   
+            else{
+                if (foundStudent){
+                    req.flash('message', "Email already exists")
+                }
+                else {
+                    const currUser = new Student ({
+                        email: newEmail,
+                        password: pass,
+                        fName: firstName,
+                        lName: lastName,
+                        appts: []
+                    })
+                    currUser.save(function(err) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        else {
+                            req.flash('message', "Account successfully created. Please login")
+                            res.redirect("/")
+                        }
+                    })   
+                }
             }
-        }
-    }) 
+        })
 })
 
 app.post("/registerT",function(req,res){
-    const newEmail = req.body.tutorEmail
-    const firstName = req.body.tutorFirst
-    const lastName = req.body.tutorLast
-    const pass = req.body.tutorPass
-    Tutor.findOne({email: newEmail}, function(err, foundTutor){
-        if (err){
-            console.log(err);
-        }
-        else{
-            if (foundTutor){
-                res.send("Email already exists")
+        const newEmail = req.body.tutorEmail
+        const firstName = req.body.tutorFirst
+        const lastName = req.body.tutorLast
+        const pass = req.body.tutorPass
+        Tutor.findOne({email: newEmail}, function(err, foundTutor){
+            if (err){
+                console.log(err);
             }
             else{
-                const currUser = new Tutor({
-                    email: newEmail,
-                    password: pass,
-                    fName: firstName,
-                    lName: lastName,
-                    monday: [],
-                    tuesday: [],
-                    wednesday: [],
-                    thursday: [],
-                    friday: [],
-                    saturday: [],
-                    sunday: [],
-                    subject: "",
-                    students: [],
-                    apptDates: [],
-                    apptTimes: []
-                })
-
-                currUser.save(function(err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    else {
-                        res.redirect("/")
-                    }
-                }) 
-                
+                if (foundTutor){
+                    req.flash('message', "Email already exists")
+                }
+                else{
+                    const currUser = new Tutor({
+                        email: newEmail,
+                        password: pass,
+                        fName: firstName,
+                        lName: lastName,
+                        monday: [],
+                        tuesday: [],
+                        wednesday: [],
+                        thursday: [],
+                        friday: [],
+                        saturday: [],
+                        sunday: [],
+                        subject: "",
+                        students: [],
+                        apptDates: [],
+                        apptTimes: []
+                    })
+    
+                    currUser.save(function(err) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        else {
+                            res.redirect("/")
+                        }
+                    }) 
+                }
             }
-        }
-    })
+        })
 })
 
 app.get("/delete", function(req, res){
-    const day = req.query.DAY
-    const index = req.query.INDEX
-    console.log(day);
-    console.log(index);
-    // Implement Delete
-    Tutor.findOne({email: req.session.user.email}, function(err, foundTutor) {
-        if (err){
-            console.log(err);
-        }
-        else {
-            console.log(foundTutor[day]);
-            foundTutor[day].splice(index, 2)
-            console.log(foundTutor[day]);
-            foundTutor.save()
-            res.redirect("/tutor")           
-        }
-    })
+    if (req.session.user) {
+        const day = req.query.DAY
+        const index = req.query.INDEX
+        console.log(day);
+        console.log(index);
+        // Implement Delete
+        Tutor.findOne({email: req.session.user.email}, function(err, foundTutor) {
+            if (err){
+                console.log(err);
+            }
+            else {
+                console.log(foundTutor[day]);
+                foundTutor[day].splice(index, 2)
+                console.log(foundTutor[day]);
+                foundTutor.save()
+                res.redirect("/tutor")           
+            }
+        })        
+    }
+    else {
+        req.flash('message', "You have been logged out. Please log back in")
+    }
     
 })
 
@@ -254,8 +301,8 @@ app.post('/subject', function(req,res){
     })
 })
 
-
 app.post('/schedule', function(req, res) {
+    var id = ""
     const date = req.body.apptDate
     const subject = req.body.subjects
     console.log("From Input: ");
@@ -289,11 +336,24 @@ app.post('/schedule', function(req, res) {
                         console.log(tutors[i].subject)
                         tutors[i].apptDates.push(newDate)
                         tutors[i].apptTimes.push(time)
+                        var militaryToTwelve = convert_military_to_twelve(time)
+                        console.log(militaryToTwelve)
                         tutors[i][days[dayofWeek]][j+2] = true
-                        const fullName = req.session.user.fName + " " + req.session.user.lName
                         tutors[i].students.push(req.session.user.fName + " " +req.session.user.lName)
+                        id = tutors[i]._id
                         tutors[i].save()
                         found = true
+                        Student.findOne({email:req.session.user.email},function(err,foundStudent){
+                            if(err){
+                                console.log(err)
+                            }
+                            else{
+                                foundStudent.appts.push(newDate)
+                                foundStudent.appts.push(time)
+                                foundStudent.appts.push(id)
+                                foundStudent.save()
+                            }
+                        })
                         res.redirect("/student")
                     }
                 }
@@ -387,7 +447,7 @@ app.post("/addAvail", function(req,res) {
     }
 })
 
-app.listen(3000,function(){
+server.listen(3000,function(){
    console.log("Server port 3000 is running") 
 //    Tutor.findOne({email: "tutorfm@gmail"}, function(err, foundTutor){
 //     if (err){
@@ -398,3 +458,4 @@ app.listen(3000,function(){
 //     }
 // })
 });
+
