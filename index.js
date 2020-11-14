@@ -6,12 +6,22 @@ const mongoose = require("mongoose")
 const session = require("client-sessions")
 const URI = "mongodb+srv://fmash1539:Byzf5S9OOW48qrNy@tutorcluster.anlqz.mongodb.net/tutoring?retryWrites=true&w=majority"
 const flash = require('connect-flash')
+var nodemailer = require('nodemailer');
 
 const app = express()
 
 const server = require('http').Server(app)
 const socketio = require('socket.io')
+const e = require("express")
 const io = socketio(server)
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'tutorfirstinc@gmail.com',
+      pass: 'Fmmuio2023'
+    }
+  });
 
 app.set("view engine", "ejs");
 
@@ -48,6 +58,7 @@ const tutorSchema = new mongoose.Schema ({
     password: String,
     fName: String,
     lName: String,
+    zoom: String,
     monday: Array,
     tuesday: Array,
     wednesday: Array,
@@ -186,34 +197,48 @@ app.post("/registerS",function(req,res){
         const firstName= req.body.studentFirst
         const lastName = req.body.studentLast
         const pass = req.body.studentPass
-        Student.findOne({email: newEmail}, function(err, foundStudent) {
-            if (err) {
-                console.log(err);
-            }
-            else{
-                if (foundStudent){
-                    req.flash('message', "Email already exists")
+        const fam = req.body.fam
+        const income = req.body.income
+        const famToIncome = {
+            2: 17240,
+            3: 21720,
+            4: 26200,
+            5: 30680
+        }
+        if (famToIncome[fam] < parseInt(income)){
+            res.send("Family income too high.")
+        }
+        else{
+            Student.findOne({email: newEmail}, function(err, foundStudent) {
+                if (err) {
+                    console.log(err);
                 }
-                else {
-                    const currUser = new Student ({
-                        email: newEmail,
-                        password: pass,
-                        fName: firstName,
-                        lName: lastName,
-                        appts: []
-                    })
-                    currUser.save(function(err) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        else {
-                            req.flash('message', "Account successfully created. Please login")
-                            res.redirect("/")
-                        }
-                    })   
+                else{
+                    if (foundStudent){
+                        req.flash('message', "Email already exists")
+                    }
+                    else {
+
+                        const currUser = new Student ({
+                            email: newEmail,
+                            password: pass,
+                            fName: firstName,
+                            lName: lastName,
+                            appts: []
+                        })
+                        currUser.save(function(err) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            else {
+                                req.flash('message', "Account successfully created. Please login")
+                                res.redirect("/")
+                            }
+                        })   
+                    }
                 }
-            }
-        })
+            })
+    }
 })
 
 app.post("/registerT",function(req,res){
@@ -235,6 +260,7 @@ app.post("/registerT",function(req,res){
                         password: pass,
                         fName: firstName,
                         lName: lastName,
+                        zoom: "",
                         monday: [],
                         tuesday: [],
                         wednesday: [],
@@ -301,7 +327,21 @@ app.post('/subject', function(req,res){
     })
 })
 
+app.post('/zoom', function(req,res){
+    Tutor.findOne({email: req.session.user.email}, function(err, foundTutor){
+        if (err){
+            console.log(err);
+        }
+        else{
+            foundTutor.zoom = req.body.zoomLink
+            foundTutor.save()
+            res.redirect('/tutor')
+        }
+    })
+})
+
 app.post('/schedule', function(req, res) {
+    var email=""
     var id = ""
     const date = req.body.apptDate
     const subject = req.body.subjects
@@ -340,9 +380,10 @@ app.post('/schedule', function(req, res) {
                         console.log(militaryToTwelve)
                         tutors[i][days[dayofWeek]][j+2] = true
                         tutors[i].students.push(req.session.user.fName + " " +req.session.user.lName)
-                        id = tutors[i]._id
+                        id = tutors[i].zoom
                         tutors[i].save()
                         found = true
+                        email=tutors[i].email
                         Student.findOne({email:req.session.user.email},function(err,foundStudent){
                             if(err){
                                 console.log(err)
@@ -351,11 +392,33 @@ app.post('/schedule', function(req, res) {
                                 foundStudent.appts.push(newDate)
                                 foundStudent.appts.push(time)
                                 foundStudent.appts.push(id)
+                                
                                 foundStudent.save()
+                                var mailOptions = {
+                                    from: 'tutorfirstinc@gmail.com',
+                                    to: email,
+                                    subject: 'You Have Been Matched!',
+                                    text: 'You have an appointment on '+newDate+" at "+time+" with "+foundStudent.fName+" "+foundStudent.lName
+                                  };
+                                  
+                                transporter.sendMail(mailOptions, function(error, info){
+                                    if (error) {
+                                      console.log(error);
+                                    } else {
+                                      console.log('Email sent: ' + info.response);
+                                    }
+                                });
+        
                             }
                         })
+
+
+
                         res.redirect("/student")
                     }
+                }
+                if(found){
+                    break;
                 }
             }
             if (!found){
@@ -427,8 +490,8 @@ app.post("/addAvail", function(req,res) {
             }
             else {
                 var failed= false
-                for (var i = 0; i < foundTutor.monday.length; i=i+3){
-                    if ( parseInt(foundTutor.monday[i].slice(0,2)) == parseInt(startTime.slice(0,2)) ) { // if hour is equal
+                for (var i = 0; i < foundTutor[day].length; i=i+3){
+                    if ( parseInt(foundTutor[day][i].slice(0,2)) == parseInt(startTime.slice(0,2)) ) { // if hour is equal
                             failed = true
                             console.log("hey");
                             req.flash('message', "Already occupied!")
@@ -445,6 +508,11 @@ app.post("/addAvail", function(req,res) {
             }
         })
     }
+})
+
+app.get("/logout", function(req, res) {
+    req.session.reset();
+    res.redirect("/")
 })
 
 server.listen(3000,function(){

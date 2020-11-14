@@ -72,20 +72,13 @@
               <span data-feather="file"></span>
               My Appointments
             </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" onclick="assignments();">
-              <span data-feather="shopping-cart"></span>
-              Assignments
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" onclick="grades();">
-              <span data-feather="users"></span>
-              Grades
-            </a>
-          </li>    
+          </li> 
         </ul>
+        <label for="logout-form"></label>
+            <form name="logout-form" class="nav-link" action="/logout">
+              <!-- <span data-feather="users"></span> -->
+              <button>Logout</button>
+            </form>
       </div>
     </nav>
 
@@ -145,7 +138,7 @@
               <tr> 
               <td><%= studentObj.appts[i] %></td>
               <td><%= studentObj.appts[i+1] %></td>
-              <td><a href="/room?room_id=<%= studentObj.appts[i+2] %>" target="_blank">Room Link</a></td>
+              <td><a href="<%= studentObj.appts[i+2] %>" target="_blank">Room Link</a></td>
             </tr>
             <% } %>
           </tbody>

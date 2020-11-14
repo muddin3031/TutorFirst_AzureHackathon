@@ -72,20 +72,13 @@
               <span data-feather="file"></span>
               My Appointments
             </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" onclick="assignments();">
-              <span data-feather="shopping-cart"></span>
-              Assignments
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" onclick="grades();">
-              <span data-feather="users"></span>
-              Grades
-            </a>
           </li>    
         </ul>
+        <label for="logout-form"></label>
+            <form name="logout-form" class="nav-link" action="/logout">
+              <!-- <span data-feather="users"></span> -->
+              <button>Logout</button>
+            </form>
       </div>
     </nav>
 
@@ -106,6 +99,12 @@
                 <option value="Chemistry">Chemistry</option>
               </select>
               <button class="btn btn-light">Save</button>
+            </form>
+            <h2>Personal Zoom Link: <%= tutorObj.zoom %></h2>
+            <form action="/zoom" method="POST">
+              <label for="">Zoom Link: </label>
+              <input type="text" name="zoomLink">
+              <button>Save</button>
             </form>
 </div>
         
@@ -254,10 +253,9 @@
               <td><%= tutorObj.apptDates[i] %></td>
               <td><%= tutorObj.students[i] %></td>
               <td><%= tutorObj.apptTimes[i] %></td>
-              <td><a href="/room?room_id=<%= tutorObj._id %>" target="_blank">Room Link</a></td>
+              <td><a href="<%= tutorObj.zoom %>" target="_blank">Room Link</a></td>
             </tr>
             <% } %>
-            
           </tbody>
         </table>
       </div>
@@ -268,6 +266,8 @@
 <div id="grades">
     <h1>Grades</h1>
 </div>
+
+
     </main>
   </div>
 </div>
